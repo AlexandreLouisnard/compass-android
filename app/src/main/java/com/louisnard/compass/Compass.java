@@ -2,7 +2,6 @@ package com.louisnard.compass;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.Configuration;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -41,7 +40,7 @@ public class Compass implements SensorEventListener {
     private float[] mGravity = new float[3];
 
     // Listener
-    private CompassListener mListener;
+    private CompassListener mCompassListener;
 
     /**
      * Interface definition for {@link Compass} callbacks.
@@ -51,7 +50,7 @@ public class Compass implements SensorEventListener {
     }
 
     // Private constructor
-    private Compass(Context context, CompassListener listener) {
+    private Compass(Context context, CompassListener compassListener) {
         mContext = context;
         // Sensors
         mSensorManager = (SensorManager) context.getSystemService(SENSOR_SERVICE);
@@ -59,7 +58,7 @@ public class Compass implements SensorEventListener {
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
         // Listener
-        mListener = listener;
+        mCompassListener = compassListener;
     }
 
     /**
@@ -134,7 +133,7 @@ public class Compass implements SensorEventListener {
                     mAzimuthDegrees += 270f;
                 }
                 // Log.d(TAG, "mAzimuthDegrees=" + String.format("%.0f", mAzimuthDegrees));
-                mListener.onAzimuthChanged(mAzimuthDegrees);
+                mCompassListener.onAzimuthChanged(mAzimuthDegrees);
             }
         }
     }
