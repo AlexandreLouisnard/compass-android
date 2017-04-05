@@ -2,12 +2,16 @@ package com.louisnard.compass;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.Display;
+import android.view.Surface;
+import android.view.WindowManager;
 
 import static android.content.Context.SENSOR_SERVICE;
 
@@ -22,6 +26,9 @@ public class Compass implements SensorEventListener {
 
     // Tag
     private static final String TAG = Compass.class.getSimpleName();
+
+    // Context
+    private Context mContext;
 
     // Sensors
     private SensorManager mSensorManager;
@@ -45,6 +52,7 @@ public class Compass implements SensorEventListener {
 
     // Private constructor
     private Compass(Context context, CompassListener listener) {
+        mContext = context;
         // Sensors
         mSensorManager = (SensorManager) context.getSystemService(SENSOR_SERVICE);
         mMagnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
@@ -104,10 +112,10 @@ public class Compass implements SensorEventListener {
     public void onSensorChanged(SensorEvent event) {
         synchronized (this) {
             if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
-                mGeomagnetic = exponentialSmoothing(event.values, mGeomagnetic, 0.5f);
+                mGeomagnetic = exponentialSmoothing(event.values, mGeomagnetic, 0.4f);
             }
             if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-                mGravity = exponentialSmoothing(event.values, mGravity, 0.2f);
+                mGravity = exponentialSmoothing(event.values, mGravity, 0.1f);
             }
             float R[] = new float[9];
             float I[] = new float[9];
@@ -116,6 +124,15 @@ public class Compass implements SensorEventListener {
                 float orientation[] = new float[3];
                 SensorManager.getOrientation(R, orientation);
                 mAzimuthDegrees = ((float) Math.toDegrees(orientation[0]) + 360) % 360; // orientation
+                final Display display = ((WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+                final int screenRotation = display.getRotation();
+                if (screenRotation == Surface.ROTATION_90) {
+                    mAzimuthDegrees += 90f;
+                } else if (screenRotation == Surface.ROTATION_180) {
+                    mAzimuthDegrees += 180f;
+                } else if (screenRotation == Surface.ROTATION_270) {
+                    mAzimuthDegrees += 270f;
+                }
                 // Log.d(TAG, "mAzimuthDegrees=" + String.format("%.0f", mAzimuthDegrees));
                 mListener.onAzimuthChanged(mAzimuthDegrees);
             }
