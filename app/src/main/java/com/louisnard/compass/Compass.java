@@ -68,7 +68,7 @@ public class Compass implements SensorEventListener {
      * @return a new {@link Compass} instance or <b>null</b> if the device does not have the required sensors.
      */
     @Nullable
-    public static Compass getInstance(Context context, CompassListener compassListener) {
+    public static Compass newInstance(Context context, CompassListener compassListener) {
         Compass compass = new Compass(context, compassListener);
         if (compass.hasRequiredSensors()) {
             return compass;
