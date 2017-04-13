@@ -73,6 +73,7 @@ public class Compass implements SensorEventListener {
         if (compass.hasRequiredSensors()) {
             return compass;
         } else {
+            Log.d(TAG, "The device does not have the required sensors for Compass.");
             return null;
         }
     }
