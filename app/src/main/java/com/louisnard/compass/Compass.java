@@ -73,7 +73,7 @@ public class Compass implements SensorEventListener {
         if (compass.hasRequiredSensors()) {
             return compass;
         } else {
-            Log.d(TAG, "The device does not have the required sensors for Compass.");
+            if (BuildConfig.DEBUG) Log.d(TAG, "The device does not have the required sensors for Compass.");
             return null;
         }
     }
@@ -81,10 +81,10 @@ public class Compass implements SensorEventListener {
     // Check that the device has the required sensors
     private boolean hasRequiredSensors() {
         if (mMagnetometer == null) {
-            Log.d(TAG, "No Magnetic sensor.");
+            if (BuildConfig.DEBUG) Log.d(TAG, "No Magnetic sensor.");
             return false;
         } else if (mAccelerometer == null) {
-            Log.d(TAG, "No Accelerometer sensor.");
+            if (BuildConfig.DEBUG) Log.d(TAG, "No Accelerometer sensor.");
             return false;
         } else {
             return true;
@@ -135,7 +135,6 @@ public class Compass implements SensorEventListener {
                 }
                 // Force azimuth value between 0° and 360°.
                 mAzimuthDegrees = (mAzimuthDegrees + 360) % 360;
-                // Log.d(TAG, "mAzimuthDegrees=" + String.format("%.0f", mAzimuthDegrees));
                 mCompassListener.onAzimuthChanged(mAzimuthDegrees);
             }
         }

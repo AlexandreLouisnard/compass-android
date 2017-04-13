@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity implements Compass.CompassLi
         // Compass
         mCompass = Compass.newInstance(this, this);
         if (mCompass == null) {
-            Log.d(TAG, "The device does not have the required sensors to use a compass.");
+            if (BuildConfig.DEBUG) Log.d(TAG, "The device does not have the required sensors to use a compass.");
         }
     }
 
