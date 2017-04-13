@@ -15,12 +15,15 @@ public class MainActivity extends AppCompatActivity implements Compass.CompassLi
     // Tag
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    // Views
-    private CompassView mCompassView;
+    // Constants
+    // The minimum difference in degrees with the last azimuth measured by the compass for the CompassListener to be notified
+    private static final float MIN_AZIMUTH_DIFFERENCE_BETWEEN_COMPASS_UPDATES = 1;
 
     // Compass
     private Compass mCompass;
 
+    // Views
+    private CompassView mCompassView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +43,7 @@ public class MainActivity extends AppCompatActivity implements Compass.CompassLi
     @Override
     protected void onResume() {
         super.onResume();
-        if (mCompass != null) mCompass.start();
+        if (mCompass != null) mCompass.start(MIN_AZIMUTH_DIFFERENCE_BETWEEN_COMPASS_UPDATES);
     }
 
     @Override
