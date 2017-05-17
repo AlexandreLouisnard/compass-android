@@ -162,31 +162,37 @@ public class Compass implements SensorEventListener {
                 float orientation[] = new float[3];
                 SensorManager.getOrientation(R, orientation);
                 mAzimuthDegrees = (float) Math.toDegrees(orientation[0]);
-                mVerticalInclinationDegrees = (float) Math.toDegrees(orientation[1]);
-                mHorizontalInclinationDegrees = (float) Math.toDegrees(orientation[2]);
                 // Correct azimuth value depending on screen orientation
                 final int screenRotation = (((WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay()).getRotation();
-                if (screenRotation == Surface.ROTATION_90) {
+                if (screenRotation == Surface.ROTATION_0) {
+                    mVerticalInclinationDegrees = (float) Math.toDegrees(orientation[1]);
+                    mHorizontalInclinationDegrees = (float) Math.toDegrees(orientation[2]);
+                } else if (screenRotation == Surface.ROTATION_90) {
                     mAzimuthDegrees += 90f;
-                    //mVerticalInclinationDegrees -= 90f;
+                    mVerticalInclinationDegrees = (float) Math.toDegrees(orientation[2]);
+                    mHorizontalInclinationDegrees = (float) -Math.toDegrees(orientation[1]);
                 } else if (screenRotation == Surface.ROTATION_180) {
                     mAzimuthDegrees += 180f;
+                    // TODO: check 2 lines below after activating 180 ° screen rotation
+                    mVerticalInclinationDegrees = (float) Math.toDegrees(orientation[1]);
+                    mHorizontalInclinationDegrees = (float) Math.toDegrees(orientation[2]);
                 } else if (screenRotation == Surface.ROTATION_270) {
                     mAzimuthDegrees += 270f;
-                    //mVerticalInclinationDegrees -= 90f;
+                    mVerticalInclinationDegrees = (float) -Math.toDegrees(orientation[2]);
+                    mHorizontalInclinationDegrees = (float) Math.toDegrees(orientation[1]);
                 }
-                // Force azimuth value between 0° and 360°.
-                mAzimuthDegrees = (mAzimuthDegrees + 360) % 360;
-                // Notify the compass listener
-                if (Math.abs(mAzimuthDegrees - mLastAzimuthDegrees) >= mAzimuthSensibility
-                        || Math.abs(mVerticalInclinationDegrees - mLastVerticalInclinationDegrees) >= mVerticalInclinationSensibility
-                        || Math.abs(mHorizontalInclinationDegrees - mLastHorizontalInclinationDegrees) >= mHorizontalInclinationSensibility
-                        || mLastAzimuthDegrees == 0) {
-                    mLastAzimuthDegrees = mAzimuthDegrees;
-                    mLastVerticalInclinationDegrees = mVerticalInclinationDegrees;
-                    mLastHorizontalInclinationDegrees = mHorizontalInclinationDegrees;
-                    mCompassListener.onOrientationChanged(mAzimuthDegrees, mVerticalInclinationDegrees, mHorizontalInclinationDegrees);
-                }
+            }
+            // Force azimuth value between 0° and 360°.
+            mAzimuthDegrees = (mAzimuthDegrees + 360) % 360;
+            // Notify the compass listener
+            if (Math.abs(mAzimuthDegrees - mLastAzimuthDegrees) >= mAzimuthSensibility
+                    || Math.abs(mVerticalInclinationDegrees - mLastVerticalInclinationDegrees) >= mVerticalInclinationSensibility
+                    || Math.abs(mHorizontalInclinationDegrees - mLastHorizontalInclinationDegrees) >= mHorizontalInclinationSensibility
+                    || mLastAzimuthDegrees == 0) {
+                mLastAzimuthDegrees = mAzimuthDegrees;
+                mLastVerticalInclinationDegrees = mVerticalInclinationDegrees;
+                mLastHorizontalInclinationDegrees = mHorizontalInclinationDegrees;
+                mCompassListener.onOrientationChanged(mAzimuthDegrees, mVerticalInclinationDegrees, mHorizontalInclinationDegrees);
             }
         }
     }
