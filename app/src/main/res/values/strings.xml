@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Compass</string>
+
+    <string name="pitch_value">Pitch value : %1$.1f °</string>
+    <string name="roll_value">Roll value : %1$.1f °</string>
+    <string name="screen_rotation_value">Screen rotation : %1$d °</string>
 </resources>
