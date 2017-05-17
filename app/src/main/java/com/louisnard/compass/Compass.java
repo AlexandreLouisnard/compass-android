@@ -15,11 +15,13 @@ import static android.content.Context.SENSOR_SERVICE;
 
 
 /**
- * Compass implementation for Android providing azimuth, pitch and roll device orientation data, in degrees.
+ * Compass implementation for Android providing azimuth, vertical inclination (pitch) and horizontal inclination (roll) of the device, in degrees.
  *
  * Azimuth: angle of rotation about the -z axis. This value represents the angle between the device's y axis and the magnetic north pole.
- * Pitch: angle of rotation about the x axis. This value represents the angle between a plane parallel to the device's screen and a plane parallel to the ground.
- * Roll: angle of rotation about the y axis. This value represents the angle between a plane perpendicular to the device's screen and a plane perpendicular to the ground.
+ * Vertical inclination = pitch: angle of rotation about the x axis. This value represents the angle between a plane parallel to the device's screen and a plane parallel to the ground.
+ * Horizontal inclination = roll: angle of rotation about the y axis. This value represents the angle between a plane perpendicular to the device's screen and a plane perpendicular to the ground.
+ *
+ * This implementation takes into account the orientation (portrait / landscape) of the device and corrects the values accordingly.
  *
  * Uses magnetic and accelerometer device sensors.
  *
@@ -45,8 +47,8 @@ public class Compass implements SensorEventListener {
 
     // Orientation
     private float mAzimuthDegrees;
-    private float mPitchDegrees;
-    private float mRollDegrees;
+    private float mVerticalInclinationDegrees;
+    private float mHorizontalInclinationDegrees;
     private float[] mGeomagnetic = new float[3];
     private float[] mGravity = new float[3];
 
@@ -54,18 +56,18 @@ public class Compass implements SensorEventListener {
     private CompassListener mCompassListener;
     // The minimum difference in degrees with the last orientation value for the CompassListener to be notified
     private float mAzimuthSensibility;
-    private float mPitchSensibility;
-    private float mRollSensibility;
+    private float mVerticalInclinationSensibility;
+    private float mHorizontalInclinationSensibility;
     // The last orientation value sent to the CompassListener
     private float mLastAzimuthDegrees;
-    private float mLastPitchDegrees;
-    private float mLastRollDegrees;
+    private float mLastVerticalInclinationDegrees;
+    private float mLastHorizontalInclinationDegrees;
 
     /**
      * Interface definition for {@link Compass} callbacks.
      */
     public interface CompassListener {
-        void onOrientationChanged(float azimuth, float pitch, float roll);
+        void onOrientationChanged(float azimuth, float verticalInclination, float horizontalInclination);
     }
 
     // Private constructor
@@ -114,13 +116,13 @@ public class Compass implements SensorEventListener {
      * Starts the {@link Compass}.
      * Must be called in {@link Activity#onResume()}.
      * @param azimuthSensibility the minimum difference in degrees with the last azimuth measure for the {@link CompassListener} to be notified. Set to 0 (default value) to be notified of the slightest change, set to 360 to never be notified.
-     * @param pitchSensibility the minimum difference in degrees with the last pitch measure for the {@link CompassListener} to be notified. Set to 0 (default value) to be notified of the slightest change, set to 360 to never be notified.
-     * @param rollSensibility the minimum difference in degrees with the last roll measure for the {@link CompassListener} to be notified. Set to 0 (default value) to be notified of the slightest change, set to 360 to never be notified.
+     * @param verticalInclinationSensibility the minimum difference in degrees with the last vertical inclination measure for the {@link CompassListener} to be notified. Set to 0 (default value) to be notified of the slightest change, set to 360 to never be notified.
+     * @param horizontalInclinationSensibility the minimum difference in degrees with the last horizontal inclination measure for the {@link CompassListener} to be notified. Set to 0 (default value) to be notified of the slightest change, set to 360 to never be notified.
      */
-    public void start(float azimuthSensibility, float pitchSensibility, float rollSensibility) {
+    public void start(float azimuthSensibility, float verticalInclinationSensibility, float horizontalInclinationSensibility) {
         mAzimuthSensibility = azimuthSensibility;
-        mPitchSensibility = pitchSensibility;
-        mRollSensibility = rollSensibility;
+        mVerticalInclinationSensibility = verticalInclinationSensibility;
+        mHorizontalInclinationSensibility = horizontalInclinationSensibility;
         mSensorManager.registerListener(this, mMagnetometer, SensorManager.SENSOR_DELAY_NORMAL);
         mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
     }
@@ -139,8 +141,8 @@ public class Compass implements SensorEventListener {
      */
     public void stop() {
         mAzimuthSensibility = 0;
-        mPitchSensibility = 0;
-        mRollSensibility = 0;
+        mVerticalInclinationSensibility = 0;
+        mHorizontalInclinationSensibility = 0;
         mSensorManager.unregisterListener(this);
     }
 
@@ -160,28 +162,30 @@ public class Compass implements SensorEventListener {
                 float orientation[] = new float[3];
                 SensorManager.getOrientation(R, orientation);
                 mAzimuthDegrees = (float) Math.toDegrees(orientation[0]);
-                mPitchDegrees = (float) Math.toDegrees(orientation[1]);
-                mRollDegrees = (float) Math.toDegrees(orientation[2]);
+                mVerticalInclinationDegrees = (float) Math.toDegrees(orientation[1]);
+                mHorizontalInclinationDegrees = (float) Math.toDegrees(orientation[2]);
                 // Correct azimuth value depending on screen orientation
                 final int screenRotation = (((WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay()).getRotation();
                 if (screenRotation == Surface.ROTATION_90) {
                     mAzimuthDegrees += 90f;
+                    //mVerticalInclinationDegrees -= 90f;
                 } else if (screenRotation == Surface.ROTATION_180) {
                     mAzimuthDegrees += 180f;
                 } else if (screenRotation == Surface.ROTATION_270) {
                     mAzimuthDegrees += 270f;
+                    //mVerticalInclinationDegrees -= 90f;
                 }
                 // Force azimuth value between 0° and 360°.
                 mAzimuthDegrees = (mAzimuthDegrees + 360) % 360;
                 // Notify the compass listener
                 if (Math.abs(mAzimuthDegrees - mLastAzimuthDegrees) >= mAzimuthSensibility
-                        || Math.abs(mPitchDegrees - mLastPitchDegrees) >= mPitchSensibility
-                        || Math.abs(mRollDegrees - mLastRollDegrees) >= mRollSensibility
+                        || Math.abs(mVerticalInclinationDegrees - mLastVerticalInclinationDegrees) >= mVerticalInclinationSensibility
+                        || Math.abs(mHorizontalInclinationDegrees - mLastHorizontalInclinationDegrees) >= mHorizontalInclinationSensibility
                         || mLastAzimuthDegrees == 0) {
                     mLastAzimuthDegrees = mAzimuthDegrees;
-                    mLastPitchDegrees = mPitchDegrees;
-                    mLastRollDegrees = mRollDegrees;
-                    mCompassListener.onOrientationChanged(mAzimuthDegrees, mPitchDegrees, mRollDegrees);
+                    mLastVerticalInclinationDegrees = mVerticalInclinationDegrees;
+                    mLastHorizontalInclinationDegrees = mHorizontalInclinationDegrees;
+                    mCompassListener.onOrientationChanged(mAzimuthDegrees, mVerticalInclinationDegrees, mHorizontalInclinationDegrees);
                 }
             }
         }
