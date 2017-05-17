@@ -38,12 +38,12 @@ public class Compass implements SensorEventListener {
     private static final float GRAVITY_SMOOTHING_FACTOR = 0.1f;
 
     // Context
-    private Context mContext;
+    private final Context mContext;
 
     // Sensors
-    private SensorManager mSensorManager;
-    private Sensor mMagnetometer;
-    private Sensor mAccelerometer;
+    private final SensorManager mSensorManager;
+    private final Sensor mMagnetometer;
+    private final Sensor mAccelerometer;
 
     // Orientation
     private float mAzimuthDegrees;
@@ -53,7 +53,7 @@ public class Compass implements SensorEventListener {
     private float[] mGravity = new float[3];
 
     // Listener
-    private CompassListener mCompassListener;
+    private final CompassListener mCompassListener;
     // The minimum difference in degrees with the last orientation value for the CompassListener to be notified
     private float mAzimuthSensibility;
     private float mVerticalInclinationSensibility;
@@ -173,9 +173,8 @@ public class Compass implements SensorEventListener {
                     mHorizontalInclinationDegrees = (float) -Math.toDegrees(orientation[1]);
                 } else if (screenRotation == Surface.ROTATION_180) {
                     mAzimuthDegrees += 180f;
-                    // TODO: check 2 lines below after activating 180 ° screen rotation
-                    mVerticalInclinationDegrees = (float) Math.toDegrees(orientation[1]);
-                    mHorizontalInclinationDegrees = (float) Math.toDegrees(orientation[2]);
+                    mVerticalInclinationDegrees = (float) -Math.toDegrees(orientation[1]);
+                    mHorizontalInclinationDegrees = (float) -Math.toDegrees(orientation[2]);
                 } else if (screenRotation == Surface.ROTATION_270) {
                     mAzimuthDegrees += 270f;
                     mVerticalInclinationDegrees = (float) -Math.toDegrees(orientation[2]);

@@ -9,7 +9,7 @@ import android.view.WindowManager;
 import android.widget.TextView;
 
 /**
- * Main activity showing device orientation data with a {@link CompassView} for the azimuth and simple text views for the vertical inclination, the horizontal inclination and the device screen orientation.
+ * Main activity showing device orientation data with a {@link CompassView} for the azimuth and text views for the vertical inclination, the horizontal inclination and the device screen orientation.
  *
  * @author Alexandre Louisnard
  */
@@ -22,8 +22,8 @@ public class MainActivity extends AppCompatActivity implements Compass.CompassLi
     // Constants
     // The minimum difference in degrees with the last orientation value for the CompassListener to be notified
     private static final float MIN_AZIMUTH_DIFFERENCE_BETWEEN_COMPASS_UPDATES = 1;
-    private static final float MIN_VERTICAL_INCLINATION_DIFFERENCE_BETWEEN_COMPASS_UPDATES = 2;
-    private static final float MIN_HORIZONTAL_INCLINATION_DIFFERENCE_BETWEEN_COMPASS_UPDATES = 3;
+    private static final float MIN_VERTICAL_INCLINATION_DIFFERENCE_BETWEEN_COMPASS_UPDATES = 1;
+    private static final float MIN_HORIZONTAL_INCLINATION_DIFFERENCE_BETWEEN_COMPASS_UPDATES = 1;
 
     // Compass
     private Compass mCompass;
