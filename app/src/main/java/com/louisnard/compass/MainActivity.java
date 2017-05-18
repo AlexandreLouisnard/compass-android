@@ -9,7 +9,7 @@ import android.view.WindowManager;
 import android.widget.TextView;
 
 /**
- * Main activity showing device orientation data with a {@link CompassView} for the azimuth and text views for the vertical inclination, the horizontal inclination and the device screen orientation.
+ * Main activity showing device orientation data with a {@link CompassView} for the azimuth and text views for the vertical inclination, the horizontal inclination and the device screen orientation.<br>
  *
  * @author Alexandre Louisnard
  */
