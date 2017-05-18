@@ -67,6 +67,18 @@ public class Compass implements SensorEventListener {
      * Interface definition for {@link Compass} callbacks.
      */
     public interface CompassListener {
+        /**
+         * Called whenever the device orientation has changed, providing azimuth, vertical inclination and horizontal inclination values taking into account the screen orientation of the device.
+         * @param azimuth the azimuth of the device, in degrees.
+         * @param verticalInclination the vertical inclination of the device, in degrees.
+         *                            Equals 0 if the device top and bottom edges are on the same level.
+         *                            Equals -90 if the device top edge is up and the device bottom edge is down.
+         *                            Equals 90 if the device top edge is down and the device bottom edge is up.
+         * @param horizontalInclination the horizontal inclination of the device, in degrees.
+         *                            Equals 0 if the device left and right edges are on the same level.
+         *                            Equals -90 if the device right edge is up and the device left edge is down.
+         *                            Equals 90 if the device right edge is down and the device left edge is up.
+         */
         void onOrientationChanged(float azimuth, float verticalInclination, float horizontalInclination);
     }
 
@@ -146,6 +158,7 @@ public class Compass implements SensorEventListener {
         mSensorManager.unregisterListener(this);
     }
 
+    // SensorEventListener
     @Override
     public void onSensorChanged(SensorEvent event) {
         synchronized (this) {
@@ -196,6 +209,7 @@ public class Compass implements SensorEventListener {
         }
     }
 
+    // SensorEventListener
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
         // Nothing to do
