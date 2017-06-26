@@ -9,7 +9,7 @@ import android.view.WindowManager;
 import android.widget.TextView;
 
 /**
- * Main activity showing device orientation data with a {@link CompassView} for the azimuth and text views for the vertical inclination, the horizontal inclination and the device screen orientation.<br>
+ * Main activity showing device orientation data with a {@link CompassView} for the azimuth and {@link TextView} for the pitch, roll and screen orientation.<br>
  *
  * @author Alexandre Louisnard
  */
@@ -20,18 +20,18 @@ public class MainActivity extends AppCompatActivity implements Compass.CompassLi
     private static final String TAG = MainActivity.class.getSimpleName();
 
     // Constants
-    // The minimum difference in degrees with the last orientation value for the CompassListener to be notified
+    // The minimum difference in degrees with the last orientation values for the CompassListener to be notified
     private static final float MIN_AZIMUTH_DIFFERENCE_BETWEEN_COMPASS_UPDATES = 1;
-    private static final float MIN_VERTICAL_INCLINATION_DIFFERENCE_BETWEEN_COMPASS_UPDATES = 1;
-    private static final float MIN_HORIZONTAL_INCLINATION_DIFFERENCE_BETWEEN_COMPASS_UPDATES = 1;
+    private static final float MIN_PITCH_DIFFERENCE_BETWEEN_COMPASS_UPDATES = 1;
+    private static final float MIN_ROLL_DIFFERENCE_BETWEEN_COMPASS_UPDATES = 1;
 
     // Compass
     private Compass mCompass;
 
     // Views
     private CompassView mCompassView;
-    private TextView mVerticalInclinationTextView;
-    private TextView mHorizontalInclinationTextView;
+    private TextView mPitchTextView;
+    private TextView mRollTextView;
     private TextView mScreenRotationTextView;
 
     @Override
@@ -41,8 +41,8 @@ public class MainActivity extends AppCompatActivity implements Compass.CompassLi
 
         // Views
         mCompassView = (CompassView) findViewById(R.id.compass_view);
-        mVerticalInclinationTextView = (TextView) findViewById(R.id.horizontal_inclination_text_view);
-        mHorizontalInclinationTextView = (TextView) findViewById(R.id.vertical_inclination_text_view);
+        mPitchTextView = (TextView) findViewById(R.id.roll_text_view);
+        mRollTextView = (TextView) findViewById(R.id.pitch_text_view);
         mScreenRotationTextView = (TextView) findViewById(R.id.screen_rotation_text_view);
 
         // Compass
@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity implements Compass.CompassLi
     @Override
     protected void onResume() {
         super.onResume();
-        if (mCompass != null) mCompass.start(MIN_AZIMUTH_DIFFERENCE_BETWEEN_COMPASS_UPDATES, MIN_VERTICAL_INCLINATION_DIFFERENCE_BETWEEN_COMPASS_UPDATES, MIN_HORIZONTAL_INCLINATION_DIFFERENCE_BETWEEN_COMPASS_UPDATES);
+        if (mCompass != null) mCompass.start(MIN_AZIMUTH_DIFFERENCE_BETWEEN_COMPASS_UPDATES, MIN_PITCH_DIFFERENCE_BETWEEN_COMPASS_UPDATES, MIN_ROLL_DIFFERENCE_BETWEEN_COMPASS_UPDATES);
     }
 
     @Override
@@ -65,10 +65,10 @@ public class MainActivity extends AppCompatActivity implements Compass.CompassLi
     }
 
     @Override
-    public void onOrientationChanged(float azimuth, float verticalInclination, float horizontalInclination) {
+    public void onOrientationChanged(float azimuth, float pitch, float roll) {
         mCompassView.updateAzimuth(azimuth);
-        mVerticalInclinationTextView.setText(String.format(getString(R.string.vertical_inclination), verticalInclination));
-        mHorizontalInclinationTextView.setText(String.format(getString(R.string.horizontal_inclination), horizontalInclination));
+        mPitchTextView.setText(String.format(getString(R.string.pitch), pitch));
+        mRollTextView.setText(String.format(getString(R.string.roll), roll));
 
         final int screenRotation = (((WindowManager) getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay()).getRotation();
         if (screenRotation == Surface.ROTATION_90) {

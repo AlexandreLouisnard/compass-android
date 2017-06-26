@@ -9,11 +9,11 @@
         android:layout_width="100dp"
         android:layout_height="100dp"/>
     <TextView
-        android:id="@+id/horizontal_inclination_text_view"
+        android:id="@+id/roll_text_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
     <TextView
-        android:id="@+id/vertical_inclination_text_view"
+        android:id="@+id/pitch_text_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
     <TextView

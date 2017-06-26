@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Compass</string>
 
-    <string name="vertical_inclination">Vertical inclination: %1$.1f °</string>
-    <string name="horizontal_inclination">Horizontal inclination: %1$.1f °</string>
+    <string name="pitch">Pitch: %1$.1f °</string>
+    <string name="roll">Roll: %1$.1f °</string>
     <string name="screen_rotation_value">Screen rotation: %1$d °</string>
 </resources>
