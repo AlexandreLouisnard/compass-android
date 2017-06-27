@@ -9,15 +9,15 @@ import android.view.WindowManager;
 import android.widget.TextView;
 
 /**
- * Main activity showing device orientation data with a {@link CompassView} for the azimuth and {@link TextView} for the pitch, roll and screen orientation.<br>
+ * {@link AppCompatActivity} showing device orientation data in a {@link CompassView} for the azimuth and in {@link TextView}s for the pitch, roll and screen orientation.<br>
  *
  * @author Alexandre Louisnard
  */
 
-public class MainActivity extends AppCompatActivity implements Compass.CompassListener {
+public class CompassActivity extends AppCompatActivity implements Compass.CompassListener {
 
     // Tag
-    private static final String TAG = MainActivity.class.getSimpleName();
+    private static final String TAG = CompassActivity.class.getSimpleName();
 
     // Constants
     // The minimum difference in degrees with the last orientation values for the CompassListener to be notified

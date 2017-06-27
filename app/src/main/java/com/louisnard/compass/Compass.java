@@ -15,11 +15,11 @@ import static android.content.Context.SENSOR_SERVICE;
 
 
 /**
- * Compass implementation for Android providing azimuth, pitch (vertical inclination) and roll (horizontal inclination) of the device, in degrees.<br>
+ * Compass implementation for Android providing azimuth to the magnetic North, pitch and roll of the device, in degrees.<br>
  *
- * Azimuth: angle of rotation about the -z axis. This value represents the angle between the device's y axis and the magnetic north pole. Counterclockwise, from 0° to 360°<br>
- * Pitch (vertical inclination): angle of rotation about the x axis. This value represents the angle between a plane parallel to the device's screen and a plane parallel to the ground. From -180° to 180°.<br>
- * Roll (horizontal inclination): angle of rotation about the y axis. This value represents the angle between a plane perpendicular to the device's screen and a plane perpendicular to the ground. From -90° to 90°.<br>
+ * <b>Azimuth</b>: angle of rotation about the -z axis. This value represents the angle between the device's y axis and the magnetic north pole. Counterclockwise, from 0° to 360°.<br>
+ * <b>Pitch</b> (vertical inclination): angle of rotation about the x axis. This value represents the angle between a plane parallel to the device's screen and a plane parallel to the ground. From -180° to 180°.<br>
+ * <b>Roll</b> (horizontal inclination): angle of rotation about the y axis. This value represents the angle between a plane perpendicular to the device's screen and a plane perpendicular to the ground. From -90° to 90°.<br>
  *
  * This implementation takes into account the orientation (portrait / landscape) of the device and corrects the values accordingly.<br>
  *
