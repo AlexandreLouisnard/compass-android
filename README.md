@@ -1,5 +1,5 @@
 # Android Compass
-Compass implementation for Android providing azimuth to the magnetic North, pitch (vertical inclination) and roll (horizontal inclination) of the device, in degrees.
+Compass implementation for Android providing azimuth (East of the magnetic North, counterclockwise), pitch (vertical inclination) and roll (horizontal inclination) of the device, in degrees.
 
 * **Azimuth**: angle of rotation about the -z axis. This value represents the angle between the device's y axis and the magnetic north pole. Counterclockwise, from 0° to 360°.
 * **Pitch** (vertical inclination): angle of rotation about the x axis. This value represents the angle between a plane parallel to the device's screen and a plane parallel to the ground. From -180° to 180°.
