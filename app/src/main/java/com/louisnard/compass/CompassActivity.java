@@ -47,9 +47,6 @@ public class CompassActivity extends AppCompatActivity implements Compass.Compas
 
         // Compass
         mCompass = Compass.newInstance(this, this);
-        if (mCompass == null) {
-            if (BuildConfig.DEBUG) Log.d(TAG, "The device does not have the required sensors to use a compass.");
-        }
     }
 
     @Override
