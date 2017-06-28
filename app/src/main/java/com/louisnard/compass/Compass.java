@@ -34,6 +34,7 @@ public class Compass implements SensorEventListener {
     private static final String TAG = Compass.class.getSimpleName();
 
     // Constants
+    private static final float ROTATION_VECTOR_SMOOTHING_FACTOR = 0.5f;
     private static final float GEOMAGNETIC_SMOOTHING_FACTOR = 0.4f;
     private static final float GRAVITY_SMOOTHING_FACTOR = 0.1f;
 
@@ -42,13 +43,15 @@ public class Compass implements SensorEventListener {
 
     // Sensors
     private final SensorManager mSensorManager;
-    private final Sensor mMagnetometer;
-    private final Sensor mAccelerometer;
+    private final Sensor mMagnetometerSensor;
+    private final Sensor mAccelerometerSensor;
+    private final Sensor mRotationVectorSensor;
 
     // Orientation
     private float mAzimuthDegrees;
     private float mPitchDegrees;
     private float mRollDegrees;
+    private float[] mRotationVector = new float[5];
     private float[] mGeomagnetic = new float[3];
     private float[] mGravity = new float[3];
 
@@ -89,8 +92,9 @@ public class Compass implements SensorEventListener {
         mContext = context;
         // Sensors
         mSensorManager = (SensorManager) context.getSystemService(SENSOR_SERVICE);
-        mMagnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
-        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        mMagnetometerSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+        mAccelerometerSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        mRotationVectorSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR);
 
         // Listener
         mCompassListener = compassListener;
@@ -115,11 +119,14 @@ public class Compass implements SensorEventListener {
 
     // Check that the device has the required sensors
     private boolean hasRequiredSensors() {
-        if (mMagnetometer == null) {
+        if (mMagnetometerSensor == null) {
             if (BuildConfig.DEBUG) Log.d(TAG, "No Magnetic sensor.");
             return false;
-        } else if (mAccelerometer == null) {
+        } else if (mAccelerometerSensor == null) {
             if (BuildConfig.DEBUG) Log.d(TAG, "No Accelerometer sensor.");
+            return false;
+        }  else if (mRotationVectorSensor == null) {
+            if (BuildConfig.DEBUG) Log.d(TAG, "No Rotation Vector sensor.");
             return false;
         } else {
             return true;
@@ -137,8 +144,9 @@ public class Compass implements SensorEventListener {
         mAzimuthSensibility = azimuthSensibility;
         mPitchSensibility = pitchSensibility;
         mRollSensibility = rollSensibility;
-        mSensorManager.registerListener(this, mMagnetometer, SensorManager.SENSOR_DELAY_NORMAL);
-        mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+        mSensorManager.registerListener(this, mMagnetometerSensor, SensorManager.SENSOR_DELAY_NORMAL);
+        mSensorManager.registerListener(this, mAccelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL);
+        mSensorManager.registerListener(this, mRotationVectorSensor, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     /**
@@ -161,7 +169,7 @@ public class Compass implements SensorEventListener {
     }
 
     // SensorEventListener
-    @Override
+    /*@Override
     public void onSensorChanged(SensorEvent event) {
         synchronized (this) {
             if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
@@ -177,7 +185,7 @@ public class Compass implements SensorEventListener {
                 float orientation[] = new float[3];
                 SensorManager.getOrientation(R, orientation);
                 mAzimuthDegrees = (float) Math.toDegrees(orientation[0]);
-                // Correct azimuth value depending on screen orientation
+                // Correct values depending on screen orientation
                 final int screenRotation = (((WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay()).getRotation();
                 if (screenRotation == Surface.ROTATION_0) {
                     mPitchDegrees = (float) Math.toDegrees(orientation[1]);
@@ -223,7 +231,63 @@ public class Compass implements SensorEventListener {
                 mCompassListener.onOrientationChanged(mAzimuthDegrees, mPitchDegrees, mRollDegrees);
             }
         }
+    }*/
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        if(event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
+            mRotationVector = exponentialSmoothing(event.values, mRotationVector, ROTATION_VECTOR_SMOOTHING_FACTOR);
+            float[] rotationMatrix = new float[9];
+            float[] orientation = new float[3];
+            // Calculate the rotation matrix
+            SensorManager.getRotationMatrixFromVector(rotationMatrix, event.values);
+            // Calculate the orientation
+            SensorManager.getOrientation(rotationMatrix, orientation);
+
+            // Get the azimuth, pitch and roll and correct values according to screen orientation
+            final int screenRotation = (((WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay()).getRotation();
+            mAzimuthDegrees = (float) Math.toDegrees(orientation[0]);
+            if (screenRotation == Surface.ROTATION_0) {
+                mPitchDegrees = (float) Math.toDegrees(orientation[1]);
+                mRollDegrees = (float) Math.toDegrees(orientation[2]);
+                if (mRollDegrees >= 90 || mRollDegrees <= -90) {
+                    mAzimuthDegrees += 180;
+                    mPitchDegrees = mPitchDegrees > 0 ? 180 - mPitchDegrees : -180 - mPitchDegrees;
+                    mRollDegrees = mRollDegrees > 0 ? 180 - mRollDegrees : -180 - mRollDegrees;
+                }
+            } else if (screenRotation == Surface.ROTATION_90) {
+                mPitchDegrees = (float) Math.toDegrees(orientation[2]);
+                mRollDegrees = (float) -Math.toDegrees(orientation[1]);
+            } else if (screenRotation == Surface.ROTATION_180) {
+                mPitchDegrees = (float) -Math.toDegrees(orientation[1]);
+                mRollDegrees = (float) -Math.toDegrees(orientation[2]);
+                if (mRollDegrees >= 90 || mRollDegrees <= -90) {
+                    mAzimuthDegrees += 180;
+                    mPitchDegrees = mPitchDegrees > 0 ? 180 - mPitchDegrees : -180 - mPitchDegrees;
+                    mRollDegrees = mRollDegrees > 0 ? 180 - mRollDegrees : -180 - mRollDegrees;
+                }
+            } else if (screenRotation == Surface.ROTATION_270) {
+                mPitchDegrees = (float) -Math.toDegrees(orientation[2]);
+                mRollDegrees = (float) Math.toDegrees(orientation[1]);
+            }
+
+            // Force azimuth value between 0° and 360°.
+            mAzimuthDegrees = (mAzimuthDegrees + 360) % 360;
+
+            // Notify the compass listener
+            if (Math.abs(mAzimuthDegrees - mLastAzimuthDegrees) >= mAzimuthSensibility
+                    || Math.abs(mPitchDegrees - mLastPitchDegrees) >= mPitchSensibility
+                    || Math.abs(mRollDegrees - mLastRollDegrees) >= mRollSensibility
+                    || mLastAzimuthDegrees == 0) {
+                mLastAzimuthDegrees = mAzimuthDegrees;
+                mLastPitchDegrees = mPitchDegrees;
+                mLastRollDegrees = mRollDegrees;
+                mCompassListener.onOrientationChanged(mAzimuthDegrees, mPitchDegrees, mRollDegrees);
+            }
+        }
     }
+
+
 
     // SensorEventListener
     @Override
@@ -233,8 +297,8 @@ public class Compass implements SensorEventListener {
 
     /**
      * Exponential smoothing of data series, acting as a low-pass filter in order to remove high-frequency noise.
-     * @param newValue the new data entry.
-     * @param lastValue the last data entry.
+     * @param newValue the new data set.
+     * @param lastValue the last data set.
      * @param alpha the smoothing factor. 0 < alpha < 1. If alpha = 0, the data will never change (lastValue = newValue). If alpha = 1, no smoothing at all will be applied (lastValue = newValue).
      * @return output the new data entry, smoothened.
      */
