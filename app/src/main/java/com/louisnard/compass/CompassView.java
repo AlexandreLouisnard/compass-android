@@ -23,7 +23,7 @@ public class CompassView extends View {
     private float mAzimuthDegrees = 0;
 
     // Drawing
-    private Paint mPaint;
+    private final Paint mPaint = new Paint();
     private Bitmap mCachedBitmap;
     private int mX;
     private int mY;
@@ -31,7 +31,6 @@ public class CompassView extends View {
 
     public CompassView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        mPaint = new Paint();
         mPaint.setAntiAlias(true);
         mPaint.setStrokeWidth(2);
         mPaint.setTextSize(25);
