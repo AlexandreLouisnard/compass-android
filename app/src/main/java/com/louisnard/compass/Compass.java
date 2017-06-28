@@ -174,6 +174,7 @@ public class Compass implements SensorEventListener {
         mSensorManager.unregisterListener(this);
     }
 
+    // SensorEventListener
     @Override
     public void onSensorChanged(SensorEvent event) {
         synchronized (this) {
