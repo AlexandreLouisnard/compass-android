@@ -1,6 +1,7 @@
 package com.louisnard.compass;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -31,11 +32,21 @@ public class CompassView extends View {
 
     public CompassView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+
+        // Get attributes
+        TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.CompassView, 0, 0);
+        int color;
+        try {
+            color = a.getColor(R.styleable.CompassView_color, Color.BLACK);
+        } finally {
+            a.recycle();
+        }
+
         mPaint.setAntiAlias(true);
         mPaint.setStrokeWidth(2);
         mPaint.setTextSize(25);
         mPaint.setStyle(Paint.Style.STROKE);
-        mPaint.setColor(Color.BLACK);
+        mPaint.setColor(color);
     }
 
     @Override
