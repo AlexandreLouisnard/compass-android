@@ -6,7 +6,6 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.os.Build;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.Surface;
@@ -51,6 +50,7 @@ public class Compass implements SensorEventListener {
     private boolean mUseRotationVectorSensor = false;
 
     // Orientation
+    @SuppressWarnings("FieldCanBeLocal")
     private float mAzimuthDegrees;
     private float mPitchDegrees;
     private float mRollDegrees;
