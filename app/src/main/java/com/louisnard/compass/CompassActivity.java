@@ -36,8 +36,10 @@ public class CompassActivity extends AppCompatActivity implements Compass.Compas
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate()");
+        Log.d(TAG, "Debug: " + BuildConfig.DEBUG);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_compass);
 
         // Views
         mCompassView = (CompassView) findViewById(R.id.compass_view);
