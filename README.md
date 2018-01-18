@@ -1,13 +1,11 @@
 # Android Compass
+
 **Author: Alexandre Louisnard alouisnard@gmail.com**  
+**Android Java Application**  
 **2017** 
 
-## Description
-
-Android application.  
-
+## DESCRIPTION
 Compass implementation providing azimuth (East of the magnetic North, counterclockwise), pitch (vertical inclination) and roll (horizontal inclination) of the device, in degrees.  
-
 
 Provides:  
 * **Azimuth**: angle of rotation about the -z axis. This value represents the angle between the device's y axis and the magnetic north pole. Counterclockwise, from 0° to 360°.
@@ -18,7 +16,7 @@ This implementation takes into account the orientation (portrait / landscape) of
 
 Uses magnetic and accelerometer device sensors.  
 
-## Classes:
+## USAGE
 
 ### CompassActivity.java
 Activity showing device orientation data in a CompassView for the azimuth and in TextView's for the pitch, roll and screen orientation.<br>
@@ -30,3 +28,7 @@ Activity showing device orientation data in a CompassView for the azimuth and in
 ### CompassView.java:
 A view drawing a simple compass: a circle and a line pointing to the azimuth.  
 * **void updateAzimuth(float azimuthDegrees)** : update the azimuth displayed in the compass view.  
+
+## CHANGELOG
+
+## BACKLOG
